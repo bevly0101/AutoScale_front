@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 264 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 264 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 264 15% 20%;
+
+    --primary: 264 72% 24%;
+    --primary-foreground: 0 0% 100%;
+    
+    --primary-light: 264 65% 35%;
+    --primary-lighter: 264 55% 50%;
+
+    --secondary: 264 15% 95%;
+    --secondary-foreground: 264 72% 24%;
+
+    --muted: 264 10% 96%;
+    --muted-foreground: 264 8% 45%;
+
+    --accent: 250 85% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 264 15% 90%;
+    --input: 264 15% 90%;
+    --ring: 264 72% 24%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 264 72% 24%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 264 72% 24%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 264 65% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 264 65% 30%;
+    --sidebar-ring: 250 85% 65%;
+    
+    --chat-hover: 264 10% 98%;
+    --message-bg: 0 0% 98%;
+  }
+
+  .dark {
+    --background: 264 20% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 264 20% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 264 20% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 264 72% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 264 20% 18%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 264 20% 18%;
+    --muted-foreground: 264 10% 60%;
+
+    --accent: 250 85% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 264 20% 18%;
+    --input: 264 20% 18%;
+    --ring: 264 72% 55%;
+    
+    --sidebar-background: 264 72% 24%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 264 72% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 264 65% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 264 65% 30%;
+    --sidebar-ring: 250 85% 65%;
+    
+    --chat-hover: 264 20% 15%;
+    --message-bg: 264 20% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Animated gradient background for auth page */
+  @keyframes gradient-flow {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes float-1 {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.05);
+    }
+  }
+
+  @keyframes float-2 {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(20px) scale(1.05);
+    }
+  }
+
+  .animate-gradient-flow {
+    background-size: 200% 200%;
+    animation: gradient-flow 15s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 8s ease-in-out infinite;
+  }
+
+  .animate-float-1 {
+    animation: float-1 10s ease-in-out infinite;
+  }
+
+  .animate-float-2 {
+    animation: float-2 12s ease-in-out infinite reverse;
+  }
+
+  .bg-gradient-radial-glow {
+    background: radial-gradient(ellipse at center, hsl(264, 72%, 55%) 0%, transparent 70%);
+  }
+
+  .bg-gradient-sphere-1 {
+    background: radial-gradient(ellipse 800px 400px at 50% 100%, hsl(264, 72%, 45%) 0%, hsl(217, 91%, 40%) 30%, transparent 70%);
+  }
+
+  .bg-gradient-sphere-2 {
+    background: radial-gradient(ellipse 800px 400px at 50% 0%, hsl(264, 72%, 45%) 0%, hsl(217, 91%, 40%) 30%, transparent 70%);
+  }
+
+  .bg-gradient-radial {
+    background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+  }
+}
