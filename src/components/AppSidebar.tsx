@@ -71,33 +71,10 @@ export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps
 
       {/* Navigation */}
       <ScrollArea className="flex-1">
-        <div className="p-3 space-y-1">
-          <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Threads
-          </Button>
-          <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-            <Inbox className="h-4 w-4 mr-2" />
-            All DMs
-          </Button>
-          <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-            <Star className="h-4 w-4 mr-2" />
-            Starred
-          </Button>
-          <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-            <AtSign className="h-4 w-4 mr-2" />
-            Mentions
-          </Button>
-          <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-            <MoreHorizontal className="h-4 w-4 mr-2" />
-            More
-          </Button>
-        </div>
-
-        {/* Channels */}
+        {/* Workspaces */}
         <div className="p-3">
           <div className="flex items-center justify-between mb-2">
-            <button 
+            <button
               onClick={() => setChannelsExpanded(!channelsExpanded)}
               className="flex items-center text-sidebar-foreground hover:text-sidebar-foreground/80 text-sm font-medium"
             >
@@ -106,11 +83,31 @@ export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps
               ) : (
                 <ChevronRight className="h-4 w-4 mr-1" />
               )}
-              Channels
+              Workspaces
             </button>
           </div>
           {channelsExpanded && (
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 pl-4">
+              <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Threads
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <Inbox className="h-4 w-4 mr-2" />
+                All DMs
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <Star className="h-4 w-4 mr-2" />
+                Starred
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <AtSign className="h-4 w-4 mr-2" />
+                Mentions
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
+                <MoreHorizontal className="h-4 w-4 mr-2" />
+                More
+              </Button>
               {channels.map((channel) => (
                 <button
                   key={channel.id}
@@ -132,7 +129,7 @@ export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps
                   )}
                 </button>
               ))}
-              <button 
+              <button
                 onClick={() => setShowAddChannel(true)}
                 className="w-full flex items-center px-2 py-1.5 text-sidebar-foreground hover:bg-sidebar-accent rounded text-sm"
               >
@@ -159,7 +156,7 @@ export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps
             </button>
           </div>
           {dmsExpanded && (
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 pl-4">
               {directMessages.map((dm) => (
                 <button
                   key={dm.id}
@@ -184,7 +181,7 @@ export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps
                   )}
                 </button>
               ))}
-              <button 
+              <button
                 onClick={() => setShowAddTeammates(true)}
                 className="w-full flex items-center px-2 py-1.5 text-sidebar-foreground hover:bg-sidebar-accent rounded text-sm"
               >

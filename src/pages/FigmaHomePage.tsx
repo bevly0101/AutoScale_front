@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CreateWorkspaceForm } from "@/components/CreateWorkspaceForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   MessageSquare,
@@ -35,6 +37,46 @@ interface NavigationSection {
 
 const FigmaHomePage = () => {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
+  const [showCreateWorkspace, setShowCreateWorkspace] = useState(false);
+
+  const fetchWorkspaces = async () => {
+    setLoadingWorkspaces(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: memberData, error: memberError } = await supabase
+        .from("workspacemembers")
+        .select("workspace_id")
+        .eq("user_id", user.id);
+
+      if (memberError) {
+        console.error("Error fetching workspace memberships:", memberError);
+      } else if (memberData) {
+        const workspaceIds = (memberData as any[]).map((m) => m.workspace_id);
+        if (workspaceIds.length > 0) {
+          const { data: workspaceData, error: workspaceError } = await supabase
+            .from("workspace")
+            .select("nome")
+            .in("id", workspaceIds);
+
+          if (workspaceError) {
+            console.error("Error fetching workspaces:", workspaceError);
+          } else {
+            setWorkspaces(workspaceData || []);
+          }
+        }
+      }
+    }
+    setLoadingWorkspaces(false);
+  };
+
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
 
   const toggleSection = (sectionTitle: string) => {
     const newCollapsed = new Set(collapsedSections);
@@ -62,8 +104,7 @@ const FigmaHomePage = () => {
       icon: "star",
       collapsible: true,
       items: [
-        { text: "AutoSoftwares", icon: "briefcase" },
-        { text: "team-finance", icon: "briefcase" },
+        ...workspaces.map((ws) => ({ text: ws.nome, icon: "briefcase" })),
         { text: "Create Workspace", icon: "plus-circle", action: "openCreateWorkspaceModal" }
       ]
     },
@@ -146,6 +187,11 @@ const FigmaHomePage = () => {
                       key={itemIndex}
                       variant="ghost"
                       className="w-full justify-start text-white hover:bg-white/20 p-2 pl-4"
+                      onClick={() => {
+                        if (item.action === "openCreateWorkspaceModal") {
+                          setShowCreateWorkspace(true);
+                        }
+                      }}
                     >
                       {item.avatar ? (
                         <div className="w-6 h-6 rounded-full bg-gray-400 mr-3 flex items-center justify-center text-xs">
@@ -184,18 +230,24 @@ const FigmaHomePage = () => {
         </div>
 
         {/* Central Content */}
-        <div className="flex-1 flex items-center justify-center"style={{ backgroundColor: '#FFFFFF' }} >
-          <div className="text-center">
-            <div className="w-64 h-64 mx-auto mb-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
-              <img
-                src="/src/assets/logo_autonotions_menu.png"
-                alt="Auto Scale Logo"
-                className="w-80 h-80 object-contain"
-              />
+        <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
+          {showCreateWorkspace ? (
+            <CreateWorkspaceForm
+              onClose={() => setShowCreateWorkspace(false)}
+              onWorkspaceCreated={fetchWorkspaces}
+            />
+          ) : (
+            <div className="text-center">
+              <div className="w-64 h-64 mx-auto mb-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
+                <img
+                  src="/src/assets/logo_autonotions_menu.png"
+                  alt="Auto Scale Logo"
+                  className="w-80 h-80 object-contain"
+                />
+              </div>
+              <p className="text-gray-500 text-sm"></p>
             </div>
-            <p className="text-gray-500 text-sm">
-            </p>
-          </div>
+          )}
         </div>
       </div>
     </div>

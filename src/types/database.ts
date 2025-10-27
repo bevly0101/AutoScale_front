@@ -167,6 +167,69 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+      },
+      workspace: {
+        Row: {
+          id: string
+          name: string
+          owner_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          owner_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          owner_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      },
+      workspacemembers: {
+        Row: {
+          id: string
+          workspace_id: string
+          user_id: string
+          role_id: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          user_id: string
+          role_id: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          user_id?: string
+          role_id?: number
+          created_at?: string
+        }
+      },
+      roles: {
+        Row: {
+          id: number
+          name: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          name: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          name?: string
+          created_at?: string
+        }
       }
     }
     Views: {
