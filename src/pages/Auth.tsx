@@ -15,7 +15,6 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,37 +24,7 @@ const Auth = () => {
     password: "",
   });
 
-  // Check for existing session on component mount
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // User already logged in, redirect to dashboard
-          navigate("/", { replace: true });
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-
-    checkSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          navigate("/", { replace: true });
-        } else if (event === 'SIGNED_OUT') {
-          setIsInitializing(false);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+  // Component is now handled by ProtectedRoute in App.tsx
 
   const validateEmail = (email: string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -190,17 +159,7 @@ const Auth = () => {
     }
   };
 
-  // Show loading spinner while initializing session
-  if (isInitializing) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span>Verificando sessão...</span>
-        </div>
-      </div>
-    );
-  }
+  // Session check is now handled by ProtectedRoute in App.tsx
 
   return (
     <div className="min-h-screen flex">
