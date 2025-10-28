@@ -37,9 +37,11 @@ interface NavigationSection {
 
 const FigmaHomePage = () => {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
   const [showCreateWorkspace, setShowCreateWorkspace] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   const fetchWorkspaces = async () => {
     setLoadingWorkspaces(true);
@@ -48,6 +50,7 @@ const FigmaHomePage = () => {
     } = await supabase.auth.getUser();
 
     if (user) {
+      setUserName(user.user_metadata.name || user.email);
       const { data: memberData, error: memberError } = await supabase
         .from("workspacemembers")
         .select("workspace_id")
@@ -88,11 +91,21 @@ const FigmaHomePage = () => {
     setCollapsedSections(newCollapsed);
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 0 && hour < 12) {
+      return "Bom dia";
+    }
+    if (hour >= 12 && hour < 19) {
+      return "Boa tarde";
+    }
+    return "Boa noite";
+  };
+
   const navigationSections: NavigationSection[] = [
     {
       title: "",
       items: [
-        { text: "Threads", icon: "message-circle" },
         { text: "All DMs", icon: "users" },
         { text: "Drafts", icon: "file-text" },
         { text: "Mentions & reactions", icon: "at-sign" },
@@ -122,7 +135,6 @@ const FigmaHomePage = () => {
   const renderIcon = (iconName: string, className = "w-4 h-4") => {
     const iconMap: Record<string, React.ReactNode> = {
       "message-square": <MessageSquare className={className} />,
-      "message-circle": <MessageCircle className={className} />,
       "users": <Users className={className} />,
       "file-text": <FileText className={className} />,
       "at-sign": <AtSign className={className} />,
@@ -168,15 +180,17 @@ const FigmaHomePage = () => {
                     variant="ghost"
                     className="w-full justify-between text-white p-2 mb-2"
                     onClick={() => section.collapsible && toggleSection(section.title)}
+                    onMouseEnter={() => setHoveredSection(section.title)}
+                    onMouseLeave={() => setHoveredSection(null)}
                   >
                     <div className="flex items-center">
                       {section.icon && renderIcon(section.icon, "w-4 h-4 mr-2")}
                       <span className="text-sm font-medium">{section.title}</span>
                     </div>
-                    {section.collapsible && (
+                    {section.collapsible && hoveredSection === section.title && (
                       collapsedSections.has(section.title) ?
-                        <ChevronDown className="w-4 h-4" /> :
-                        <ChevronUp className="w-4 h-4" />
+                        <ChevronUp className="w-4 h-4" /> :
+                        <ChevronDown className="w-4 h-4" />
                     )}
                   </Button>
                 )}
@@ -215,7 +229,7 @@ const FigmaHomePage = () => {
         {/* Header */}
         <div className="p-4 flex items-center justify-between bg-white border-b">
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-medium text-gray-800">Boa tarde, Roberto!</h2>
+            <h2 className="text-lg font-medium text-gray-800">{getGreeting()}, {userName || 'usuário'}!</h2>
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input

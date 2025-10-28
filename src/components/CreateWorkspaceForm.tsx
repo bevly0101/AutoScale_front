@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 
@@ -20,6 +21,7 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
   const [teammateEmail, setTeammateEmail] = useState("");
   const [teammates, setTeammates] = useState<Teammate[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleAddTeammate = async () => {
     if (!teammateEmail) return;
@@ -27,14 +29,14 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
     const { data, error } = await supabase
       .from("users")
       .select("id, nome, email")
-      .eq("email", teammateEmail)
-      .single();
+      .eq("email", teammateEmail);
 
-    if (error || !data) {
+    if (error || !data || data.length === 0) {
       setError("User not found.");
     } else {
-      if (!teammates.find((t) => t.id === (data as any).id)) {
-        setTeammates([...teammates, data as any]);
+      const user = (data as any)[0];
+      if (!teammates.find((t) => t.id === user.id)) {
+        setTeammates([...teammates, user]);
       }
       setTeammateEmail("");
       setError(null);
@@ -43,6 +45,7 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
 
   const handleCreateWorkspace = async () => {
     console.log("handleCreateWorkspace called");
+    setIsCreating(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -98,16 +101,19 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
         onClose();
       } catch (error) {
         console.error("An error occurred during workspace creation:", error);
+      } finally {
+        setIsCreating(false);
       }
     } else {
       console.error("User is not authenticated.");
+      setIsCreating(false);
     }
   };
 
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-4">Create Workspace</h2>
-      <div className="space-y-4">
+      <div className={`space-y-4 ${isCreating ? 'opacity-50' : ''}`}>
         <div>
           <label htmlFor="workspaceName" className="block text-sm font-medium text-gray-700">
             Workspace Name
@@ -141,8 +147,9 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
             </div>
           ))}
         </div>
-        <Button onClick={handleCreateWorkspace} className="w-full">
-          Create
+        <Button onClick={handleCreateWorkspace} className="w-full" disabled={isCreating}>
+          {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {isCreating ? 'Creating...' : 'Create'}
         </Button>
       </div>
     </div>
