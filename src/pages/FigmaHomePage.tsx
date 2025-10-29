@@ -177,7 +177,7 @@ const FigmaHomePage = () => {
         <div className="p-4 flex items-center">
           <div className="flex items-center gap-2">
             <img
-              src="/src/assets/logo_autonotions.png"
+              src="/logo_autonotions.png"
               alt="Auto Scale Logo"
               className="w-8 h-8"
             />
@@ -291,7 +291,7 @@ const FigmaHomePage = () => {
             <div className="text-center">
               <div className="w-64 h-64 mx-auto mb-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
                 <img
-                  src="/src/assets/logo_autonotions_menu.png"
+                  src="/logo_autonotions_menu.png"
                   alt="Auto Scale Logo"
                   className="w-80 h-80 object-contain"
                 />

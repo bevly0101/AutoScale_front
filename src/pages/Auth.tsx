@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import logoImage from "@/assets/logo_autonotions.png";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -178,7 +177,7 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <img src={logoImage} alt="Auto Scale" className="w-10 h-10" />
+            <img src="/logo_autonotions.png" alt="Auto Scale" className="w-10 h-10" />
             <span className="text-2xl font-semibold text-foreground">Auto Scale</span>
           </div>
 

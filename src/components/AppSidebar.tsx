@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AddChannelModal } from "@/components/AddChannelModal";
 import { AddTeammatesModal } from "@/components/AddTeammatesModal";
 import { NewMessageModal } from "@/components/NewMessageModal";
-import logo from "@/assets/logo_autonotions.png";
 
 interface Channel {
   id: string;
@@ -72,7 +71,7 @@ export function AppSidebar({ workspaceId }: AppSidebarProps) {
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3 mb-4">
-          <img src={logo} alt="Auto Scale" className="w-10 h-10 rounded-lg" />
+          <img src="/logo_autonotions.png" alt="Auto Scale" className="w-10 h-10 rounded-lg" />
           <h1 className="text-sidebar-foreground font-bold text-xl">Auto Scale</h1>
         </div>
         <Button 
