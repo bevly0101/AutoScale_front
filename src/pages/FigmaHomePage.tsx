@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CreateWorkspaceForm } from "@/components/CreateWorkspaceForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Notifications from "@/components/notifications/Notifications";
 import {
   MessageSquare,
   MessageCircle,
@@ -36,12 +38,32 @@ interface NavigationSection {
 }
 
 const FigmaHomePage = () => {
+  const navigate = useNavigate();
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
   const [showCreateWorkspace, setShowCreateWorkspace] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [centralContent, setCentralContent] = useState<string>("default");
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  const fetchUnreadNotifications = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
+        .eq('is_read', false);
+
+      if (error) {
+        console.error('Error fetching unread notifications count:', error);
+      } else {
+        setUnreadNotifications(count || 0);
+      }
+    }
+  };
 
   const fetchWorkspaces = async () => {
     setLoadingWorkspaces(true);
@@ -63,7 +85,7 @@ const FigmaHomePage = () => {
         if (workspaceIds.length > 0) {
           const { data: workspaceData, error: workspaceError } = await supabase
             .from("workspace")
-            .select("nome")
+            .select("id, nome")
             .in("id", workspaceIds);
 
           if (workspaceError) {
@@ -79,6 +101,7 @@ const FigmaHomePage = () => {
 
   useEffect(() => {
     fetchWorkspaces();
+    fetchUnreadNotifications();
   }, []);
 
   const toggleSection = (sectionTitle: string) => {
@@ -117,7 +140,7 @@ const FigmaHomePage = () => {
       icon: "star",
       collapsible: true,
       items: [
-        ...workspaces.map((ws) => ({ text: ws.nome, icon: "briefcase" })),
+        ...workspaces.map((ws) => ({ text: ws.nome, icon: "briefcase", action: `workspace:${ws.id}` })),
         { text: "Create Workspace", icon: "plus-circle", action: "openCreateWorkspaceModal" }
       ]
     },
@@ -204,6 +227,13 @@ const FigmaHomePage = () => {
                       onClick={() => {
                         if (item.action === "openCreateWorkspaceModal") {
                           setShowCreateWorkspace(true);
+                        } else if (item.action && item.action.startsWith("workspace:")) {
+                          const workspaceId = item.action.split(':')[1];
+                          navigate(`/workspace?id=${workspaceId}`);
+                        } else if (item.text === "Notifications") {
+                          setCentralContent("notifications");
+                        } else {
+                          setCentralContent("default");
                         }
                       }}
                     >
@@ -215,6 +245,11 @@ const FigmaHomePage = () => {
                         item.icon && <div className="w-4 h-4 mr-3">{renderIcon(item.icon)}</div>
                       )}
                       <span className="text-sm">{item.text}</span>
+                      {item.text === "Notifications" && unreadNotifications > 0 && (
+                        <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                          {unreadNotifications}
+                        </span>
+                      )}
                     </Button>
                   ))}
                 </div>
@@ -245,7 +280,9 @@ const FigmaHomePage = () => {
 
         {/* Central Content */}
         <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
-          {showCreateWorkspace ? (
+          {centralContent === "notifications" ? (
+            <Notifications />
+          ) : showCreateWorkspace ? (
             <CreateWorkspaceForm
               onClose={() => setShowCreateWorkspace(false)}
               onWorkspaceCreated={fetchWorkspaces}

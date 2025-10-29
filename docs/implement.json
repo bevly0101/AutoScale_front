@@ -1,0 +1,59 @@
+{
+  "appName": "Auto Scale - Funcionalidade de Notificações (Integração Supabase)",
+  "description": "Implementar a funcionalidade completa de notificações, incluindo a integração com o Supabase para busca e exibição das notificações do usuário logado e a lógica de criação de notificação de convite de Workspace para novos membros.",
+  "techStack": {
+    "database": "Supabase (PostgreSQL)",
+    "frontendLogic": "TypeScript",
+    "supabaseClient": "Usar a biblioteca oficial do Supabase para TypeScript."
+  },
+  "databaseSchema": {
+    "tables": [
+      {
+        "name": "Notifications",
+        "columns": ["id (UUID, PK)", "recipient_id (UUID, FK -> Users.id)", "sender_id (UUID, FK -> Users.id, opcional)", "type (VARCHAR(50))", "message (TEXT)", "is_read (BOOLEAN)", "created_at (TIMESTAMP WITH TIME ZONE)"]
+      },
+      {
+        "name": "Users",
+        "columns": ["id (UUID, PK)", "nome (TEXT)", "email (TEXT)", "avatar_url (TEXT)"]
+      },
+      {
+        "name": "Workspace",
+        "columns": ["id (UUID, PK)", "nome (TEXT)", "owner_id (UUID, FK -> Users.id)"]
+      },
+      {
+        "name": "WorkspaceMembers",
+        "columns": ["id (UUID, PK)", "user_id (UUID, FK -> Users.id)", "workspace_id (UUID, FK -> Workspace.id)"]
+      }
+    ]
+  },
+  "functionality": [
+    {
+      "feature": "Exibição de Notificações (Frontend)",
+      "location": "Central Content, ativado pelo clique no item 'Notifications' do Sidebar.",
+      "logic": [
+        "**Busca de Dados:** Recuperar da tabela `Notifications` todas as notificações onde `recipient_id` é o ID do usuário logado, ordenadas por `created_at` (DESC).",
+        "**Exibição:** Renderizar a lista de notificações usando o componente `NotificationCard` (definido em um prompt anterior).",
+        "**Contador de Não Lidas:** Implementar uma consulta para contar as notificações onde `recipient_id` é o ID do usuário logado E `is_read` = FALSE. Este contador deve ser exibido como um *badge* no ícone 'Notifications' do Sidebar.",
+        "**Marcar como Lida:** Implementar uma função que, ao clicar no botão de ação ou ao visualizar a lista, atualize o campo `is_read` para TRUE na notificação clicada ou em todas as notificações visíveis."
+      ]
+    },
+    {
+      "feature": "Geração de Notificação de Convite de Workspace",
+      "location": "Lógica de backend/transação de criação de Workspace (complementando o prompt `autoscale_supabase_workspace_logic_prompt.json`).",
+      "trigger": "Após a inserção bem-sucedida de um novo membro na tabela `WorkspaceMembers` durante a criação de um Workspace.",
+      "logic": [
+        "Para cada novo membro (com `role_id` = 2) inserido na tabela `WorkspaceMembers`, deve ser inserida uma nova row na tabela `Notifications`.",
+        "**Dados da Notificação:**",
+        "**`recipient_id`**: ID do novo membro.",
+        "**`sender_id`**: ID do usuário que criou o Workspace (`owner_id`).",
+        "**`type`**: Definir como `'workspace_invite'` (ou similar).",
+        "**`message`**: Gerar uma mensagem informativa, ex: `[Nome do Criador] te convidou para o Workspace [Nome do Workspace]`. (É necessário fazer JOIN com a tabela `Workspace` para obter o nome).",
+        "**`is_read`**: FALSE (padrão)."
+      ],
+      "dataFlow": "O processo de criação de Workspace deve ser estendido para garantir que a inserção na tabela `Notifications` ocorra imediatamente após a inserção bem-sucedida em `WorkspaceMembers`."
+    }
+  ],
+  "typescriptInterfaces": [
+    "Garantir a tipagem forte para a estrutura da tabela `Notifications` e a função de busca/inserção no Supabase."
+  ]
+}

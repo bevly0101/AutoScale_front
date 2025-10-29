@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Hash, Plus, ChevronDown, ChevronRight, Pencil, MessageSquare, Inbox, Star, MoreHorizontal, AtSign } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,14 +23,6 @@ interface DirectMessage {
   unread?: number;
 }
 
-const channels: Channel[] = [
-  { id: "1", name: "design-team" },
-  { id: "2", name: "social-media", unread: 3 },
-  { id: "3", name: "team-finance" },
-  { id: "4", name: "announcements" },
-  { id: "5", name: "pr" },
-];
-
 const directMessages: DirectMessage[] = [
   { id: "1", name: "Will Rodrigues (you)", avatar: "", online: true },
   { id: "2", name: "Bea Rosen", avatar: "", online: true },
@@ -38,17 +31,41 @@ const directMessages: DirectMessage[] = [
 ];
 
 interface AppSidebarProps {
-  selectedChannel: string;
-  onChannelSelect: (channel: string) => void;
+  workspaceId: string | null;
 }
 
-export function AppSidebar({ selectedChannel, onChannelSelect }: AppSidebarProps) {
+export function AppSidebar({ workspaceId }: AppSidebarProps) {
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [channelsExpanded, setChannelsExpanded] = useState(true);
   const [dmsExpanded, setDmsExpanded] = useState(true);
   const [appsExpanded, setAppsExpanded] = useState(true);
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showAddTeammates, setShowAddTeammates] = useState(false);
   const [showNewMessage, setShowNewMessage] = useState(false);
+
+  useEffect(() => {
+    if (workspaceId) {
+      const fetchChannels = async () => {
+        const { data, error } = await supabase
+          .from('channels')
+          .select('*')
+          .eq('workspace_id', workspaceId);
+
+        if (error) {
+          console.error('Error fetching channels:', error);
+        } else {
+          setChannels(data as Channel[]);
+        }
+      };
+
+      fetchChannels();
+    }
+  }, [workspaceId]);
+
+  const onChannelSelect = (channel: string) => {
+    setSelectedChannel(channel);
+  };
 
   return (
     <div className="h-full w-64 bg-sidebar flex flex-col border-r border-sidebar-border">

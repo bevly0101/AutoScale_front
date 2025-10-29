@@ -11,6 +11,7 @@ import FigmaHomePage from "./pages/FigmaHomePage";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Signup from "./pages/Signup";
+import Workspace from "./pages/Workspace";
 
 const queryClient = new QueryClient();
 
@@ -88,7 +89,7 @@ const App = () => (
              path="/workspace"
              element={
                <ProtectedRoute>
-                 <Index />
+                 <Workspace />
                </ProtectedRoute>
              }
            />

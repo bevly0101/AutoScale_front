@@ -94,6 +94,21 @@ export const CreateWorkspaceForm: React.FC<CreateWorkspaceFormProps> = ({ onClos
 
           if (membersError) throw membersError;
           console.log("Teammates added");
+
+          // 4. Create notifications for new members
+          const notifications = teammates.map(t => ({
+            recipient_id: t.id,
+            sender_id: user.id,
+            type: 'workspace_invite',
+            message: `${user.user_metadata.name || user.email} invited you to the workspace ${workspaceName}`,
+          }));
+
+          const { error: notificationsError } = await supabase
+            .from('notifications')
+            .insert(notifications as any);
+
+          if (notificationsError) throw notificationsError;
+          console.log("Notifications created for new teammates");
         }
 
         console.log("Workspace creation successful. Calling callbacks.");
